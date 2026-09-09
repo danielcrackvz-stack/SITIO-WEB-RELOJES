@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel CRONOS — Ingresar</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: var(--bg-soft); }
+  </style>
+</head>
+<body>
+
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <span class="eyebrow">Panel de administración</span>
+      <h1>CRONOS</h1>
+      <p class="auth-sub">Acceso exclusivo para el equipo de la relojería.</p>
+
+      <p id="auth-error" class="auth-error"></p>
+
+      <form id="admin-login-form">
+        <div class="field">
+          <label for="email">Correo electrónico</label>
+          <input type="email" id="email" name="email" placeholder="tu@correo.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Ingresar al panel</button>
+      </form>
+
+      <p class="auth-switch">
+        <a href="../index.html">← Volver al sitio</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# Cachés locales de la CLI de Supabase (no hace falta subirlas)
+supabase/.temp/
+supabase/.branches/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

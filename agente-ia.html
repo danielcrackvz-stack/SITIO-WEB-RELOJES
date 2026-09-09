@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relojería CRONOS — Asesor IA</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .chat-wrap {
+      min-height: calc(100vh - var(--nav-height));
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      background: var(--bg-soft);
+    }
+    .chat-card {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      height: 700px;
+      box-shadow: 0 4px 20px rgba(20, 30, 25, 0.06);
+    }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+    .chat-header-text strong {
+      display: block;
+      font-size: 15px;
+      font-family: var(--font-display);
+    }
+    .chat-header-text span {
+      font-size: 13px;
+      color: var(--success);
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .msg {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .msg-bot {
+      align-self: flex-start;
+      background: var(--bg-elevated-2);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+    .msg-user {
+      align-self: flex-end;
+      background: var(--green);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-typing {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Botones de opciones del cuestionario */
+    .chat-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-self: flex-start;
+      max-width: 90%;
+    }
+    .chat-option-btn {
+      padding: 10px 16px;
+      border: 1.5px solid var(--green);
+      color: var(--green);
+      background: #ffffff;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    .chat-option-btn:hover:not(:disabled) {
+      background: var(--green);
+      color: #ffffff;
+    }
+    .chat-option-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    .chat-options-elegido .chat-option-btn:not(:disabled) {
+      display: none;
+    }
+
+    /* Tarjetas de resultado dentro del chat */
+    .chat-resultados {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-resultado-card {
+      display: flex;
+      gap: 14px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 12px;
+    }
+    .chat-resultado-media {
+      width: 96px;
+      height: 96px;
+      flex-shrink: 0;
+      background: var(--bg-elevated-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+    }
+    .chat-resultado-media svg {
+      width: 44%;
+      opacity: 0.45;
+    }
+    .chat-resultado-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .chat-resultado-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .chat-resultado-match {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--green);
+      background: rgba(20, 83, 45, 0.08);
+      padding: 3px 8px;
+      border-radius: 20px;
+      margin-bottom: 6px;
+    }
+    .chat-resultado-info h4 {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .chat-resultado-precio {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .chat-resultado-acciones {
+      display: flex;
+      gap: 8px;
+    }
+    .chat-resultado-acciones .btn-detalle,
+    .chat-resultado-acciones .btn-whatsapp {
+      padding: 7px 10px;
+      font-size: 12px;
+      width: auto;
+      flex: 1;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 10px;
+      padding: 16px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 12px 16px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+    }
+    .chat-input input:focus {
+      outline: none;
+      border-color: var(--green);
+    }
+    .chat-input input:disabled {
+      opacity: 0.6;
+    }
+    .chat-send {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .chat-send:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+      .chat-wrap {
+        padding: 0;
+      }
+      .chat-card {
+        height: calc(100vh - var(--nav-height));
+        max-width: 100%;
+        border-left: none;
+        border-right: none;
+      }
+      .chat-resultado-card {
+        flex-direction: column;
+      }
+      .chat-resultado-media {
+        width: 100%;
+        height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="img/logo-cronos.png" alt="Cronos - Tienda de relojes" class="brand-logo-img">
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+      <div class="nav-actions">
+        <div id="auth-slot"><a href="login.html">Ingresar</a></div>
+        <button class="nav-toggle" aria-label="Abrir menú">&#9776;</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== CHAT CON EL ASESOR IA ===================== -->
+  <main class="chat-wrap">
+    <div class="chat-card">
+
+      <div class="chat-header">
+        <span class="brand-mark"></span>
+        <div class="chat-header-text">
+          <strong>CRONOAI</strong>
+          <span>● En línea</span>
+        </div>
+      </div>
+
+      <!-- Los mensajes, preguntas y resultados se generan en js/chat-ia.js -->
+      <div class="chat-messages" id="chat-messages"></div>
+
+      <form class="chat-input" id="chat-form">
+        <input type="text" placeholder="Respondé las preguntas de arriba..." disabled>
+        <button type="submit" class="chat-send" disabled>➤</button>
+      </form>
+
+    </div>
+  </main>
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/whatsapp-config.js"></script>
+  <script src="js/productos.js"></script>
+  <script src="js/chat-ia.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

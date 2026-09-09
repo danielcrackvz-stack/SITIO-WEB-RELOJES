@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relojería CRONOS — Detalle del producto</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="img/logo-cronos.png" alt="Cronos - Tienda de relojes" class="brand-logo-img">
+      </a>
+
+      <nav class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+
+      <div class="nav-actions">
+        <div id="auth-slot"><a href="login.html">Ingresar</a></div>
+        <button class="nav-toggle" aria-label="Abrir menú">&#9776;</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== DETALLE DEL PRODUCTO ===================== -->
+  <main class="detalle-wrap">
+    <div class="container">
+      <div id="detalle-producto">
+        <p style="text-align:center;color:var(--text-muted);padding:60px 0">Cargando reloj...</p>
+      </div>
+
+      <section class="relacionados">
+        <div class="relacionados-head">
+          <h2>También te puede interesar</h2>
+          <a href="catalogo.html" class="eyebrow">Ver catálogo →</a>
+        </div>
+        <div class="product-grid" id="relacionados-grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <span class="brand-name">CRONOS</span>
+          <p>Venta directa desde nuestro domicilio, atención personalizada.</p>
+        </div>
+        <div class="footer-col">
+          <p class="eyebrow">Navegación</p>
+          <a href="index.html">Inicio</a>
+          <a href="catalogo.html">Catálogo</a>
+        </div>
+        <div class="footer-col">
+          <p class="eyebrow">Contacto</p>
+          <a href="#">WhatsApp</a>
+          <a href="#">Instagram</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 Cronos. Todos los derechos reservados.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== BOTÓN FLOTANTE ASESOR IA ===================== -->
+  <a href="agente-ia.html" class="ai-float-btn">
+    <span class="brand-mark"></span>
+    <span class="ai-float-text">
+      <strong>¿Necesitás ayuda?</strong>
+      <span>Chateá con tu asesor</span>
+    </span>
+  </a>
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/whatsapp-config.js"></script>
+  <script src="js/productos.js"></script>
+  <script src="js/detalle-producto.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
