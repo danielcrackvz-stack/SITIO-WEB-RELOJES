@@ -235,7 +235,7 @@ function pintarResultados(puntuados) {
   bloque.innerHTML = puntuados.map(({ producto, score }) => {
     const glbUrl = producto.modelo_3d_url || producto.modelo_glb_url || producto.modelo_3d || producto.modelo_glb || producto.archivo_3d;
     const imgUrl = producto.imagen_url || producto.imagen || producto.foto || producto.url_imagen || "img/logo-cronos.png";
-    const telefono = window.WHATSAPP_PHONE || "59170000000";
+    const telefono = window.WHATSAPP_PHONE || "59173158851";
     const linkWhatsApp = window.generarLinkWhatsApp 
       ? window.generarLinkWhatsApp(producto) 
       : `https://wa.me/${telefono}?text=${encodeURIComponent(`Hola Cronos, me interesa el reloj ${producto.nombre} (Bs${producto.precio}) que me recomendó el Asesor IA.`)}`;

@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (elResistencia) elResistencia.textContent = producto.resistencia || "100m (10 ATM)";
 
     if (btnWhatsapp) {
-      const telefono = window.WHATSAPP_PHONE || "59170000000";
+      const telefono = window.WHATSAPP_PHONE || "59173158851";
       const msg = encodeURIComponent(`Hola Cronos, estoy interesado en el reloj: ${nombre} (Bs{precio})`);
       btnWhatsapp.href = `https://wa.me/${telefono}?text=${msg}`;
     }

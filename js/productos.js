@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Función global de WhatsApp requerida por chat-ia.js
 window.generarLinkWhatsApp = function(producto, mensajePersonalizado) {
-  const telefono = window.WHATSAPP_PHONE || "59170000000";
+  const telefono = window.WHATSAPP_PHONE || "59173158851";
   const nombre = producto?.nombre || producto?.titulo || "este reloj";
   const texto = mensajePersonalizado || `Hola Cronos, me interesa el reloj ${nombre} que me recomendó el Asesor IA.`;
   return `https://wa.me/${telefono}?text=${encodeURIComponent(texto)}`;
