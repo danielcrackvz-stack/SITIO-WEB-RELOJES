@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Enlace limpio a WhatsApp garantizado
     if (btnWhatsapp) {
-      const telefono = window.WHATSAPP_PHONE || "59170000000";
+      const telefono = window.WHATSAPP_PHONE || "59173158851";
       const mensajeTexto = `¡Hola Relojería Cronos! Estoy interesado en adquirir el siguiente modelo:\n\n• Pieza: ${nombre}\n• Precio: Bs. ${precioFormateado}\n\n¿Tienen disponibilidad para coordinar la entrega?`;
       btnWhatsapp.href = `https://wa.me/${telefono}?text=${encodeURIComponent(mensajeTexto)}`;
     }
