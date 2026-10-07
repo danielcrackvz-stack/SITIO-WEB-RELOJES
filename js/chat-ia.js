@@ -3,13 +3,9 @@
    1) Cuestionario guiado (CRONOAI) de 6 preguntas con botones
    2) Sistema de puntaje que arma un ranking de coincidencia
    3) Muestra los mejores relojes con botón de detalle y WhatsApp
-   4) Después habilita el chat libre con Gemini (vía Edge Function),
-      ya con el contexto de lo que el cliente respondió.
+   4) Chat libre con Gemini (vía Edge Function)
    ========================================================= */
 
-// -----------------------------------------------------------
-// Banco de preguntas
-// -----------------------------------------------------------
 const PREGUNTAS_CRONOAI = [
   {
     id: 'genero',
@@ -81,7 +77,6 @@ let respuestasUsuario = {};
 let historialChat = [];
 let promptSistema = '';
 
-// Helper de seguridad para obtener el cliente de Supabase
 function obtenerClienteSupabase() {
   if (typeof supabaseClient !== "undefined") return supabaseClient;
   if (window._supabase) return window._supabase;
@@ -93,9 +88,6 @@ function obtenerClienteSupabase() {
   return null;
 }
 
-// -----------------------------------------------------------
-// UI: pintar mensajes y opciones en pantalla
-// -----------------------------------------------------------
 function pintarMensaje(texto, esUsuario = false) {
   const contenedor = document.getElementById('chat-messages');
   const burbuja = document.createElement('div');
@@ -135,9 +127,6 @@ function pintarOpciones(opciones, onElegir) {
   contenedor.scrollTop = contenedor.scrollHeight;
 }
 
-// -----------------------------------------------------------
-// Flujo del cuestionario
-// -----------------------------------------------------------
 function hacerPregunta(indice) {
   if (indice >= PREGUNTAS_CRONOAI.length) {
     mostrarResultados();
@@ -159,9 +148,6 @@ function hacerPregunta(indice) {
   });
 }
 
-// -----------------------------------------------------------
-// Sistema de puntaje (100 pts en total)
-// -----------------------------------------------------------
 function calcularCoincidencia(producto, respuestas) {
   let puntos = 0;
 
@@ -181,7 +167,6 @@ function calcularCoincidencia(producto, respuestas) {
 async function mostrarResultados() {
   const indicador = mostrarEscribiendo();
   
-  // Llamada segura a obtenerProductos
   let productos = [];
   if (typeof window.obtenerProductos === 'function') {
     productos = await window.obtenerProductos();
@@ -214,14 +199,13 @@ async function mostrarResultados() {
     .slice(0, 3);
 
   if (!dentroDePresupuesto) {
-    pintarMensaje('No tenemos relojes disponibles exactamente en ese rango, pero estas piezas se acercan bastante a lo que buscas:', false);
+    pintarMensaje('No tenemos relojes disponibles en ese rango exacto, pero estas piezas se acercan bastante a tus gustos:', false);
   } else {
     pintarMensaje('¡Listo! Estos son los relojes que mejor coinciden con tus preferencias:', false);
   }
 
   pintarResultados(puntuados);
-
-  pintarMensaje('¿Tenés alguna otra duda o consulta sobre estas piezas? Podés seguir escribiéndome aquí abajo.', false);
+  pintarMensaje('¿Tenés alguna otra consulta sobre estos modelos? Podés seguir escribiéndome aquí abajo.', false);
 
   promptSistema = await construirPromptSistema(puntuados);
   habilitarChatLibre();
@@ -233,12 +217,19 @@ function pintarResultados(puntuados) {
   bloque.className = 'chat-resultados';
 
   bloque.innerHTML = puntuados.map(({ producto, score }) => {
-    const glbUrl = producto.modelo_3d_url || producto.modelo_glb_url || producto.modelo_3d || producto.modelo_glb || producto.archivo_3d;
-    const imgUrl = producto.imagen_url || producto.imagen || producto.foto || producto.url_imagen || "img/logo-cronos.png";
-    const telefono = window.WHATSAPP_PHONE || "59173158851";
-    const linkWhatsApp = window.generarLinkWhatsApp 
-      ? window.generarLinkWhatsApp(producto) 
-      : `https://wa.me/${telefono}?text=${encodeURIComponent(`Hola Cronos, me interesa el reloj ${producto.nombre} (Bs${producto.precio}) que me recomendó el Asesor IA.`)}`;
+    const glbUrl = producto.modelo_3d_url || producto.modelo_glb_url || producto.modelo_3d || producto.archivo_3d;
+    const imgUrl = producto.imagen_url || producto.imagen || producto.foto || "img/logo-cronos.png";
+    const precioFormateado = Number(producto.precio || 0).toLocaleString("es-BO", { minimumFractionDigits: 2 });
+    
+    // Enlace limpio usando el generador centralizado
+    let linkWhatsApp = "";
+    if (typeof window.generarLinkWhatsApp === "function") {
+      linkWhatsApp = window.generarLinkWhatsApp(producto);
+    } else {
+      const telefono = window.WHATSAPP_PHONE || "59173158851";
+      const texto = `¡Hola Relojería Cronos! Me interesa el modelo recomendado por el Asesor IA:\n\n• Pieza: ${producto.nombre}\n• Precio: Bs. ${precioFormateado}\n\n¿Tienen disponibilidad?`;
+      linkWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(texto)}`;
+    }
 
     return `
       <div class="chat-resultado-card">
@@ -261,7 +252,7 @@ function pintarResultados(puntuados) {
         <div class="chat-resultado-info">
           <span class="chat-resultado-match">${score > 0 ? score + '% Coincidencia' : 'Recomendado'}</span>
           <h4>${producto.nombre}</h4>
-          <div class="chat-resultado-precio">Bs ${Number(producto.precio || 0).toLocaleString("es-BO", { minimumFractionDigits: 2 })}</div>
+          <div class="chat-resultado-precio">Bs. ${precioFormateado}</div>
           <div class="chat-resultado-acciones">
             <a href="producto.html?id=${producto.id}" class="btn-detalle" style="padding: 7px 12px; font-size: 12px; text-decoration: none; background: #111; color: #fff; border-radius: 4px; text-align: center; font-weight: 600;">Ver en 360°</a>
             <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp" style="padding: 7px 12px; font-size: 12px; text-decoration: none; background: #25D366; color: #fff; border-radius: 4px; text-align: center; font-weight: 600;">WhatsApp</a>
@@ -275,9 +266,6 @@ function pintarResultados(puntuados) {
   contenedor.scrollTop = contenedor.scrollHeight;
 }
 
-// -----------------------------------------------------------
-// Chat libre con Gemini (después del cuestionario)
-// -----------------------------------------------------------
 async function construirPromptSistema(puntuados) {
   let productos = [];
   if (typeof window.obtenerProductos === 'function') {
@@ -378,9 +366,6 @@ function habilitarChatLibre() {
   input.focus();
 }
 
-// -----------------------------------------------------------
-// Inicialización de la página del chat
-// -----------------------------------------------------------
 function iniciarChat() {
   const form = document.getElementById('chat-form');
   if (!form) return;
