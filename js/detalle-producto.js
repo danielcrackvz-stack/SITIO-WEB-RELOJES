@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // Obtener cliente Supabase
   let client = null;
   if (typeof supabaseClient !== "undefined") client = supabaseClient;
   else if (window._supabase) client = window._supabase;
@@ -55,14 +54,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const nombre = producto.nombre || producto.titulo || "Reloj Cronos";
     const precio = producto.precio || producto.costo || 0;
-    const precioFormateado = Number(precio).toLocaleString("es-BO", { minimumFractionDigits: 2 });
+    const precioNum = Number(precio).toFixed(2);
     const descripcion = producto.descripcion || producto.detalle || "Pieza de precisión artesanal.";
     const categoria = producto.categoria || producto.tipo || "ALTA RELOJERÍA";
     const imagen = producto.imagen_url || producto.imagen || producto.foto || producto.url_imagen || "";
     const modelo3D = producto.modelo_3d_url || producto.modelo_glb_url || producto.modelo_3d || producto.modelo_glb || producto.archivo_3d || "";
 
     if (elNombre) elNombre.textContent = nombre;
-    if (elPrecio) elPrecio.textContent = precioFormateado;
+    if (elPrecio) elPrecio.textContent = precioNum;
     if (elDescripcion) elDescripcion.textContent = descripcion;
     if (elCategoria) elCategoria.textContent = categoria.toUpperCase();
 
@@ -70,11 +69,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (elMovimiento) elMovimiento.textContent = producto.movimiento || "Automático Suizo";
     if (elResistencia) elResistencia.textContent = producto.resistencia || "100m (10 ATM)";
 
-    // Enlace limpio a WhatsApp garantizado
+    // Asignación directa con concatenación clásica (imposible que falle)
     if (btnWhatsapp) {
-      const telefono = window.WHATSAPP_PHONE || "59173158851";
-      const mensajeTexto = `¡Hola Relojería Cronos! Estoy interesado en adquirir el siguiente modelo:\n\n• Pieza: ${nombre}\n• Precio: Bs. ${precioFormateado}\n\n¿Tienen disponibilidad para coordinar la entrega?`;
-      btnWhatsapp.href = `https://wa.me/${telefono}?text=${encodeURIComponent(mensajeTexto)}`;
+      const tel = window.WHATSAPP_PHONE || "59173158851";
+      const textoFinal = "¡Hola Relojería Cronos! Estoy interesado en adquirir el siguiente modelo:\n\n" +
+                         "• Pieza: " + nombre + "\n" +
+                         "• Precio: Bs " + precioNum + "\n\n" +
+                         "¿Tienen disponibilidad para coordinar la entrega?";
+      btnWhatsapp.href = "https://wa.me/" + tel + "?text=" + encodeURIComponent(textoFinal);
     }
 
     if (imagen) viewer.setAttribute("poster", imagen);
@@ -89,8 +91,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   viewer.addEventListener("progress", (e) => {
     const pct = Math.round(e.detail.totalProgress * 100);
-    progressFill.style.width = `${pct}%`;
-    progressText.textContent = `Cargando 3D... ${pct}%`;
+    progressFill.style.width = pct + "%";
+    progressText.textContent = "Cargando 3D... " + pct + "%";
   });
 
   viewer.addEventListener("load", () => {
