@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  // Obtener cliente Supabase
   let client = null;
   if (typeof supabaseClient !== "undefined") client = supabaseClient;
   else if (window._supabase) client = window._supabase;
@@ -69,15 +70,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (elMovimiento) elMovimiento.textContent = producto.movimiento || "Automático Suizo";
     if (elResistencia) elResistencia.textContent = producto.resistencia || "100m (10 ATM)";
 
-    // Generar enlace limpio a WhatsApp sin paréntesis raros
+    // Enlace limpio a WhatsApp garantizado
     if (btnWhatsapp) {
-      if (typeof window.generarLinkWhatsApp === "function") {
-        btnWhatsapp.href = window.generarLinkWhatsApp(producto);
-      } else {
-        const telefono = window.WHATSAPP_PHONE || "59173158851";
-        const textoMsg = `¡Hola Relojería Cronos! Estoy interesado en adquirir el siguiente modelo:\n\n• Pieza: ${nombre}\n• Precio: Bs. ${precioFormateado}\n\n¿Tienen disponibilidad para coordinar la entrega?`;
-        btnWhatsapp.href = `https://wa.me/${telefono}?text=${encodeURIComponent(textoMsg)}`;
-      }
+      const telefono = window.WHATSAPP_PHONE || "59170000000";
+      const mensajeTexto = `¡Hola Relojería Cronos! Estoy interesado en adquirir el siguiente modelo:\n\n• Pieza: ${nombre}\n• Precio: Bs. ${precioFormateado}\n\n¿Tienen disponibilidad para coordinar la entrega?`;
+      btnWhatsapp.href = `https://wa.me/${telefono}?text=${encodeURIComponent(mensajeTexto)}`;
     }
 
     if (imagen) viewer.setAttribute("poster", imagen);
