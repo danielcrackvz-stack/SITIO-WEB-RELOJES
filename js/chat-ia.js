@@ -41,7 +41,6 @@ const PREGUNTAS_CRONOAI = [
   {
     id: 'colorCorrea',
     texto: '4/6 ¿Qué color de correa preferís?',
-    // Las opciones dependen de la pregunta anterior (se arman al vuelo)
     opcionesPorCorrea: {
       Metal: [
         { label: 'Dorado', valor: 'Dorado' },
@@ -81,6 +80,18 @@ let indicePregunta = 0;
 let respuestasUsuario = {};
 let historialChat = [];
 let promptSistema = '';
+
+// Helper de seguridad para obtener el cliente de Supabase
+function obtenerClienteSupabase() {
+  if (typeof supabaseClient !== "undefined") return supabaseClient;
+  if (window._supabase) return window._supabase;
+  if (typeof supabase !== "undefined" && typeof supabase.functions !== "undefined") return supabase;
+  if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+    const create = window.supabase?.createClient || createClient;
+    return create(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+  }
+  return null;
+}
 
 // -----------------------------------------------------------
 // UI: pintar mensajes y opciones en pantalla
@@ -169,7 +180,19 @@ function calcularCoincidencia(producto, respuestas) {
 
 async function mostrarResultados() {
   const indicador = mostrarEscribiendo();
-  const productos = await obtenerProductos(false);
+  
+  // Llamada segura a obtenerProductos
+  let productos = [];
+  if (typeof window.obtenerProductos === 'function') {
+    productos = await window.obtenerProductos();
+  } else {
+    const client = obtenerClienteSupabase();
+    if (client) {
+      const { data } = await client.from('productos').select('*');
+      productos = data || [];
+    }
+  }
+
   indicador.remove();
 
   const rango = respuestasUsuario.presupuesto;
@@ -191,14 +214,14 @@ async function mostrarResultados() {
     .slice(0, 3);
 
   if (!dentroDePresupuesto) {
-    pintarMensaje('No tenemos relojes disponibles en ese rango de precio, pero estos se acercan bastante a lo que buscás:', false);
+    pintarMensaje('No tenemos relojes disponibles exactamente en ese rango, pero estas piezas se acercan bastante a lo que buscas:', false);
   } else {
-    pintarMensaje('¡Listo! Estos son los relojes que mejor coinciden con lo que buscás:', false);
+    pintarMensaje('¡Listo! Estos son los relojes que mejor coinciden con tus preferencias:', false);
   }
 
   pintarResultados(puntuados);
 
-  pintarMensaje('¿Tenés alguna otra pregunta? Podés seguir escribiéndome.', false);
+  pintarMensaje('¿Tenés alguna otra duda o consulta sobre estas piezas? Podés seguir escribiéndome aquí abajo.', false);
 
   promptSistema = await construirPromptSistema(puntuados);
   habilitarChatLibre();
@@ -210,23 +233,38 @@ function pintarResultados(puntuados) {
   bloque.className = 'chat-resultados';
 
   bloque.innerHTML = puntuados.map(({ producto, score }) => {
-    const media = producto.modelo_3d_url
-      ? `<model-viewer src="${producto.modelo_3d_url}" alt="${producto.nombre}" auto-rotate camera-controls disable-zoom style="width:100%;height:100%;background:transparent;"></model-viewer>`
-      : (producto.imagen_url ? `<img src="${producto.imagen_url}" alt="${producto.nombre}">` : iconoRelojSVG);
+    const glbUrl = producto.modelo_3d_url || producto.modelo_glb_url || producto.modelo_3d || producto.modelo_glb || producto.archivo_3d;
+    const imgUrl = producto.imagen_url || producto.imagen || producto.foto || producto.url_imagen || "img/logo-cronos.png";
+    const telefono = window.WHATSAPP_PHONE || "59170000000";
+    const linkWhatsApp = window.generarLinkWhatsApp 
+      ? window.generarLinkWhatsApp(producto) 
+      : `https://wa.me/${telefono}?text=${encodeURIComponent(`Hola Cronos, me interesa el reloj ${producto.nombre} (Bs${producto.precio}) que me recomendó el Asesor IA.`)}`;
 
     return `
       <div class="chat-resultado-card">
-        <div class="chat-resultado-media">${media}</div>
+        <div class="chat-resultado-media">
+          ${glbUrl ? `
+            <model-viewer
+              src="${glbUrl}"
+              poster="${imgUrl}"
+              camera-controls
+              auto-rotate
+              disable-zoom
+              interaction-prompt="none"
+              style="width: 100%; height: 100%; background: transparent;"
+              loading="lazy">
+            </model-viewer>
+          ` : `
+            <img src="${imgUrl}" alt="${producto.nombre}" />
+          `}
+        </div>
         <div class="chat-resultado-info">
-          <span class="chat-resultado-match">${score}% de coincidencia</span>
+          <span class="chat-resultado-match">${score > 0 ? score + '% Coincidencia' : 'Recomendado'}</span>
           <h4>${producto.nombre}</h4>
-          <p class="chat-resultado-precio">Bs ${producto.precio}</p>
+          <div class="chat-resultado-precio">Bs ${Number(producto.precio || 0).toLocaleString("es-BO", { minimumFractionDigits: 2 })}</div>
           <div class="chat-resultado-acciones">
-            <a class="btn-detalle" href="producto.html?id=${producto.id}">Ver detalle</a>
-            <a class="btn-whatsapp" href="${generarLinkWhatsApp(producto)}" target="_blank" rel="noopener">
-              ${iconoWhatsAppSVG}
-              WhatsApp
-            </a>
+            <a href="producto.html?id=${producto.id}" class="btn-detalle" style="padding: 7px 12px; font-size: 12px; text-decoration: none; background: #111; color: #fff; border-radius: 4px; text-align: center; font-weight: 600;">Ver en 360°</a>
+            <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp" style="padding: 7px 12px; font-size: 12px; text-decoration: none; background: #25D366; color: #fff; border-radius: 4px; text-align: center; font-weight: 600;">WhatsApp</a>
           </div>
         </div>
       </div>
@@ -241,7 +279,17 @@ function pintarResultados(puntuados) {
 // Chat libre con Gemini (después del cuestionario)
 // -----------------------------------------------------------
 async function construirPromptSistema(puntuados) {
-  const productos = await obtenerProductos(false);
+  let productos = [];
+  if (typeof window.obtenerProductos === 'function') {
+    productos = await window.obtenerProductos();
+  } else {
+    const client = obtenerClienteSupabase();
+    if (client) {
+      const { data } = await client.from('productos').select('*');
+      productos = data || [];
+    }
+  }
+
   const listaProductos = productos
     .map((p) => `- ${p.nombre} | ${p.categoria} | Bs ${p.precio} | ${p.estilo || ''} | correa ${p.tipo_correa || ''} ${p.color_correa || ''} | esfera ${p.diseno_esfera || ''}`)
     .join('\n');
@@ -250,7 +298,7 @@ async function construirPromptSistema(puntuados) {
     .map(({ producto, score }) => `- ${producto.nombre} (Bs ${producto.precio}, ${score}% de coincidencia)`)
     .join('\n');
 
-  return `Sos el asesor virtual de Cronos, una relojería que vende relojes por WhatsApp desde su domicilio.
+  return `Sos el asesor virtual de Cronos, una relojería exclusiva en Bolivia que vende relojes y atiende por WhatsApp.
 
 El cliente ya respondió un cuestionario de preferencias:
 ${JSON.stringify(respuestasUsuario)}
@@ -262,27 +310,34 @@ Este es el catálogo completo disponible:
 ${listaProductos}
 
 Reglas importantes:
-- Respondé en español, tono cercano y profesional.
-- Respuestas cortas: máximo 3-4 oraciones.
-- Solo recomendá productos que están en el catálogo de arriba, nunca inventes modelos o precios.
-- Si te piden algo distinto a lo ya recomendado (otro precio, otro estilo), buscá en el catálogo y sugerí opciones concretas por nombre.
-- Si preguntan algo que no tiene que ver con relojes, redirigí amablemente la conversación al tema.`;
+- Respondé en español con tono amable, elegante y profesional.
+- Moneda: siempre en bolivianos (Bs).
+- Respuestas cortas: máximo 3 o 4 oraciones.
+- Solo recomendá productos existentes en el catálogo; nunca inventes modelos ni precios.
+- Si piden algo distinto a lo recomendado, busca en la lista de arriba y sugiere piezas por su nombre exacto.
+- Si consultan sobre compras o envíos, recuérdales que pueden coordinar directamente por WhatsApp.`;
 }
 
 async function preguntarAGemini(mensajeUsuario) {
   historialChat.push({ role: 'user', parts: [{ text: mensajeUsuario }] });
 
-  const { data, error } = await supabaseClient.functions.invoke('chat-ia', {
+  const client = obtenerClienteSupabase();
+  if (!client) {
+    throw new Error('No se pudo establecer conexión con el servidor.');
+  }
+
+  const { data, error } = await client.functions.invoke('chat-ia', {
     body: { promptSistema, historial: historialChat },
   });
 
   if (error) {
     console.error('Error llamando a la función:', error);
-    throw new Error('No se pudo contactar al asesor. Intentá de nuevo en un momento.');
+    throw new Error('No se pudo contactar al asesor. Intenta de nuevo en un momento.');
   }
 
-  const textoRespuesta = data.candidates?.[0]?.content?.parts?.[0]?.text
-    || 'Perdón, no entendí bien eso. ¿Podés reformularlo?';
+  const textoRespuesta = data?.candidates?.[0]?.content?.parts?.[0]?.text
+    || data?.respuesta
+    || 'Disculpa, no pude procesar esa consulta. ¿Podrías reformularla?';
 
   historialChat.push({ role: 'model', parts: [{ text: textoRespuesta }] });
   return textoRespuesta;
@@ -319,7 +374,8 @@ function habilitarChatLibre() {
   const boton = document.querySelector('.chat-send');
   input.disabled = false;
   boton.disabled = false;
-  input.placeholder = 'Escribí tu pregunta...';
+  input.placeholder = 'Escribe tu consulta aquí...';
+  input.focus();
 }
 
 // -----------------------------------------------------------
@@ -327,7 +383,7 @@ function habilitarChatLibre() {
 // -----------------------------------------------------------
 function iniciarChat() {
   const form = document.getElementById('chat-form');
-  if (!form) return; // esta página no es agente-ia.html
+  if (!form) return;
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();

@@ -3,16 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relojería CRONOS — Inicio</title>
+  <title>Relojería CRONOS — Excelencia y Precisión</title>
+  
+  <!-- Tipografías de alta gama -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="light-theme">
 
   <!-- ===================== NAVBAR ===================== -->
   <header class="navbar">
-    <div class="container">
+    <div class="container nav-container-flex">
       <a href="index.html" class="brand">
         <img src="img/logo-cronos.png" alt="Cronos - Tienda de relojes" class="brand-logo-img">
+        <span class="brand-text">CRONOS</span>
       </a>
 
       <nav class="nav-links">
@@ -23,33 +30,125 @@
       </nav>
 
       <div class="nav-actions">
-        <div id="auth-slot"><a href="login.html">Ingresar</a></div>
+        <div id="auth-slot"><a href="login.html" class="btn-auth-link">Ingresar</a></div>
         <button class="nav-toggle" aria-label="Abrir menú">&#9776;</button>
       </div>
     </div>
   </header>
 
-  <!-- ===================== HERO ===================== -->
-  <section class="hero">
-    <div class="container">
-      <p class="eyebrow hero-eyebrow">Relojería de colección</p>
-      <h1>La colección</h1>
-      <p>Descubrí un mundo de precisión y prestigio. Explorá nuestra selección
-        curada de relojes, cada uno visible en 3D antes de decidir.</p>
-      <a href="catalogo.html" class="btn btn-primary">Ver catálogo</a>
+  <!-- ===================== HERO EDITORIAL ROLEX STYLE ===================== -->
+  <section class="rolex-hero">
+    <div class="rolex-hero-overlay"></div>
+    <div class="container rolex-hero-content">
+      <span class="hero-eyebrow">ALTA RELOJERÍA Y TRADICIÓN</span>
+      <h1 class="hero-title">El Dominio del Tiempo</h1>
+      <p class="hero-subtitle">
+        Descubre un universo de ingeniería suiza y elegancia atemporal. Cada pieza cuenta una historia de excelencia, diseñada para perdurar por generaciones.
+      </p>
+      <div class="hero-actions">
+        <a href="catalogo.html" class="btn-hero-primary">Explorar Colección</a>
+        <a href="#destacados" class="btn-hero-secondary">Modelos Destacados</a>
+      </div>
     </div>
   </section>
 
   <!-- ===================== PRODUCTOS DESTACADOS ===================== -->
-  <section class="section">
+  <section class="section showcase-section" id="destacados">
     <div class="container">
-      <div class="section-head">
-        <p class="eyebrow">Colección destacada</p>
-        <h2>Piezas seleccionadas</h2>
+      <div class="showcase-header text-center">
+        <span class="eyebrow">PIEZAS EMBLEMÁTICAS</span>
+        <h2 class="section-title">Modelos de Distinción</h2>
+        <p class="section-subtitle">
+          Selección de relojes insignia disponibles para inspección tridimensional detallada.
+        </p>
       </div>
 
-      <!-- Los productos se cargan dinámicamente desde Supabase (js/productos.js) -->
-      <div class="product-grid" id="product-grid" data-destacados="true"></div>
+      <!-- Contenedor donde js/productos.js inyectará las filas estilo Rolex -->
+      <div class="featured-showcase-container" id="product-grid" data-destacados="true">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <div class="showcase-cta-wrap text-center">
+        <a href="catalogo.html" class="btn-view-all-collection">
+          Ver Todo el Catálogo de Relojes
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECCIÓN NOSOTROS ===================== -->
+  <section class="section about-section" id="nosotros">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-content">
+          <span class="eyebrow">TRADICIÓN & EXCLUSIVIDAD</span>
+          <h2 class="section-title">Sobre Relojería Cronos</h2>
+          <p class="about-lead">
+            Para <strong>Cronos</strong>, un reloj es mucho más que un mecanismo: es el reflejo de tus logros, tu personalidad y tu legado.
+          </p>
+          <p class="about-text">
+            Ofrecemos colecciones rigurosamente autenticadas, combinando la atención boutique de primer nivel con la última tecnología de visualización interactiva en 360 grados, permitiéndote apreciar cada ángulo antes de adquirir tu próxima joya de muñeca.
+          </p>
+          <div class="about-features">
+            <div class="feature-item">
+              <span class="feature-number">100%</span>
+              <span class="feature-label">Garantía de Calidad</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-number">360°</span>
+              <span class="feature-label">Modelado Interactivo</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-number">1 a 1</span>
+              <span class="feature-label">Atención Directa</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-seal-card">
+          <div class="seal-inner">
+            <div class="seal-icon">⏱️</div>
+            <h3>Compromiso y Pasión</h3>
+            <p>Atención directa y asesoramiento técnico especializado en Santa Cruz para encontrar la pieza que complemente tu estilo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECCIÓN CONTACTO ===================== -->
+  <section class="section contact-section" id="contacto">
+    <div class="container">
+      <div class="contact-header text-center">
+        <span class="eyebrow">ATENCIÓN DIRECTA</span>
+        <h2 class="section-title">Coordina tu Adquisición</h2>
+        <p class="section-subtitle">
+          Estamos a tu servicio para resolver inquietudes técnicas, verificar disponibilidad o coordinar entregas seguras.
+        </p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-icon">💬</div>
+          <h3>Asesoría por WhatsApp</h3>
+          <p>Consulta con un especialista en directo sobre disponibilidad, métodos de pago y reservas.</p>
+          <a href="https://wa.me/59170000000?text=Hola%20Cronos,%20quisiera%20recibir%20asesoría%20sobre%20sus%20relojes" target="_blank" class="contact-btn">Abrir WhatsApp</a>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon">📍</div>
+          <h3>Ubicación y Entregas</h3>
+          <p>Santa Cruz de la Sierra, Bolivia. Realizamos entregas personalizadas con previa confirmación.</p>
+          <span class="contact-detail-text">Lunes a Sábado: 09:00 - 19:30</span>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon">✨</div>
+          <h3>Asesor Inteligente IA</h3>
+          <p>¿No estás seguro de qué pieza elegir? Nuestro asistente virtual te orientará según tus preferencias.</p>
+          <a href="agente-ia.html" class="contact-btn secondary">Probar Asesor Virtual</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -57,19 +156,22 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-col">
+        <div class="footer-col brand-col">
           <span class="brand-name">CRONOS</span>
-          <p>Venta directa desde nuestro domicilio, atención personalizada.</p>
+          <p>Relojería exclusiva. Selección curada con los más altos estándares de manufactura y precisión.</p>
         </div>
         <div class="footer-col">
-          <p class="eyebrow">Navegación</p>
+          <p class="footer-heading">Navegación</p>
           <a href="index.html">Inicio</a>
-          <a href="catalogo.html">Catálogo</a>
+          <a href="catalogo.html">Catálogo Completo</a>
+          <a href="#nosotros">Nosotros</a>
+          <a href="#contacto">Contacto</a>
         </div>
         <div class="footer-col">
-          <p class="eyebrow">Contacto</p>
-          <a href="#">WhatsApp</a>
-          <a href="#">Instagram</a>
+          <p class="footer-heading">Contacto & Ayuda</p>
+          <a href="https://wa.me/59170000000" target="_blank">Atención al Cliente</a>
+          <a href="agente-ia.html">Asesor Inteligente</a>
+          <a href="admin/login.html">Acceso Administrador</a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -80,14 +182,14 @@
 
   <!-- ===================== BOTÓN FLOTANTE ASESOR IA ===================== -->
   <a href="agente-ia.html" class="ai-float-btn">
-    <span class="brand-mark"></span>
+    <span class="ai-spark">✨</span>
     <span class="ai-float-text">
-      <strong>¿Necesitás ayuda?</strong>
-      <span>Chateá con tu asesor</span>
+      <strong>¿Buscás asesoramiento?</strong>
+      <span>Consulta a tu asistente IA</span>
     </span>
   </a>
 
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/whatsapp-config.js"></script>

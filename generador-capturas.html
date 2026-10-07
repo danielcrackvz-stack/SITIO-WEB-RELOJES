@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cronos — Generador Automático de Miniaturas 3D</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <style>
+    body {
+      background: #f4f4f7;
+      color: #1a1a1e;
+      padding: 30px 20px;
+      font-family: sans-serif;
+    }
+    .tools-box {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    }
+    .status-log {
+      margin-top: 15px;
+      padding: 12px;
+      background: #111;
+      color: #34d399;
+      font-family: monospace;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      min-height: 50px;
+      white-space: pre-line;
+    }
+    .preview-canvas-box {
+      width: 320px;
+      height: 320px;
+      margin: 20px auto;
+      border: 1px dashed #ccc;
+      position: relative;
+      background: #fff;
+    }
+    model-viewer {
+      width: 100%;
+      height: 100%;
+    }
+    .btn-run {
+      background: #c5a059;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-run:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tools-box">
+    <h2>Generador de Miniaturas para Catálogo</h2>
+    <p>Este script procesará cada reloj secuencialmente (uno por uno), tomará una captura centrada de su modelo GLB y actualizará su campo <code>imagen_url</code> en Supabase para que el catálogo cargue instantáneo.</p>
+    
+    <button id="btn-start" class="btn-run">Comenzar Proceso Automático</button>
+
+    <div class="preview-canvas-box">
+      <!-- Visor de trabajo invisible o visible donde se sacará la foto -->
+      <model-viewer
+        id="hidden-viewer"
+        camera-orbit="0deg 75deg 105%"
+        shadow-intensity="1.2"
+        shadow-softness="0.8"
+        environment-image="neutral"
+        exposure="1.0"
+        interaction-prompt="none"
+        preserve-drawing-buffer>
+      </model-viewer>
+    </div>
+
+    <div class="status-log" id="log-box">Listo para procesar. Haz clic en "Comenzar Proceso Automático".</div>
+  </div>
+
+  <script src="js/supabase-config.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const viewer = document.getElementById("hidden-viewer");
+      const btnStart = document.getElementById("btn-start");
+      const logBox = document.getElementById("log-box");
+
+      let client = null;
+      if (typeof supabaseClient !== "undefined") client = supabaseClient;
+      else if (window._supabase) client = window._supabase;
+      else if (typeof supabase !== "undefined" && typeof supabase.from === "function") client = supabase;
+      else if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+        const create = window.supabase?.createClient || createClient;
+        client = create(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      }
+
+      function log(msg) {
+        logBox.textContent += "\n" + msg;
+        logBox.scrollTop = logBox.scrollHeight;
+      }
+
+      btnStart.addEventListener("click", async () => {
+        if (!client) {
+          alert("Error: Supabase no está conectado.");
+          return;
+        }
+
+        btnStart.disabled = true;
+        log("Obteniendo lista de productos desde Supabase...");
+
+        const { data: productos, error } = await client.from("productos").select("*");
+        if (error || !productos) {
+          log("Error al traer productos: " + error.message);
+          btnStart.disabled = false;
+          return;
+        }
+
+        log(`Se encontraron ${productos.length} productos. Iniciando capturas...`);
+
+        for (let i = 0; i < productos.length; i++) {
+          const item = productos[i];
+          const glbUrl = item.modelo_3d_url || item.modelo_glb_url || item.modelo_3d || item.modelo_glb || item.archivo_3d;
+
+          if (!glbUrl) {
+            log(`[${i+1}/${productos.length}] Omitido: ${item.nombre} (No tiene archivo GLB asociado)`);
+            continue;
+          }
+
+          log(`[${i+1}/${productos.length}] Renderizando: ${item.nombre}...`);
+
+          try {
+            // Esperar que cargue el modelo 3D en el visor
+            await new Promise((resolve, reject) => {
+              viewer.src = glbUrl;
+              const onLoad = () => {
+                viewer.removeEventListener("load", onLoad);
+                setTimeout(resolve, 800); // 800ms para asegurar estabilización de sombras y brillo
+              };
+              viewer.addEventListener("load", onLoad);
+              setTimeout(() => reject(new Error("Tiempo de espera agotado")), 25000);
+            });
+
+            // Generar captura como imagen Blob (WebP / PNG)
+            const blob = await viewer.toBlob({ idealAspect: true, mimeType: "image/webp", qualityArgument: 0.9 });
+            const fileName = `poster_${item.id}_${Date.now()}.webp`;
+
+            // Subir al Storage de Supabase (bucket 'productos' o 'relojes')
+            // Si tu bucket se llama diferente (ej: 'fotos' o 'imagenes'), cámbialo aquí
+            const bucketName = "productos"; 
+            
+            const { data: uploadData, error: uploadErr } = await client.storage
+              .from(bucketName)
+              .upload(fileName, blob, { contentType: "image/webp", upsert: true });
+
+            let finalUrl = "";
+            if (!uploadErr) {
+              const { data: publicUrlData } = client.storage.from(bucketName).getPublicUrl(fileName);
+              finalUrl = publicUrlData.publicUrl;
+            } else {
+              // Si no tienes configurado el bucket con permisos públicos, convertimos a DataURL para guardar directamente
+              finalUrl = viewer.toDataURL("image/webp", 0.85);
+              log(`Nota: Guardado directo en base64 para ${item.nombre}`);
+            }
+
+            // Actualizar el registro en la base de datos
+            await client.from("productos").update({ imagen_url: finalUrl }).eq("id", item.id);
+            log(`✓ Captura generada y guardada para: ${item.nombre}`);
+
+          } catch (e) {
+            log(`✗ Error al procesar ${item.nombre}: ${e.message}`);
+          }
+        }
+
+        log("\n¡PROCESO COMPLETADO! Ya puedes volver a catalogo.html e index.html.");
+        btnStart.disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>

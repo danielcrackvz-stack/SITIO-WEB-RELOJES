@@ -1,92 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relojería CRONOS — Detalle del producto</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalle de Reloj - Cronos</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 </head>
-<body>
+<body class="light-theme">
 
-  <!-- ===================== NAVBAR ===================== -->
-  <header class="navbar">
-    <div class="container">
-      <a href="index.html" class="brand">
-        <img src="img/logo-cronos.png" alt="Cronos - Tienda de relojes" class="brand-logo-img">
+  <header class="main-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <img src="img/logo-cronos.png" alt="Cronos Logo" class="nav-logo" onerror="this.style.display='none'">
+        <span>CRONOS</span>
       </a>
-
       <nav class="nav-links">
         <a href="index.html">Inicio</a>
-        <a href="catalogo.html">Catálogo</a>
-        <a href="#nosotros">Nosotros</a>
-        <a href="#contacto">Contacto</a>
+        <a href="catalogo.html">Colección</a>
+        <a href="agente-ia.html">Asesor Virtual</a>
       </nav>
-
-      <div class="nav-actions">
-        <div id="auth-slot"><a href="login.html">Ingresar</a></div>
-        <button class="nav-toggle" aria-label="Abrir menú">&#9776;</button>
-      </div>
     </div>
   </header>
 
-  <!-- ===================== DETALLE DEL PRODUCTO ===================== -->
-  <main class="detalle-wrap">
-    <div class="container">
-      <div id="detalle-producto">
-        <p style="text-align:center;color:var(--text-muted);padding:60px 0">Cargando reloj...</p>
-      </div>
+  <main class="product-page-main">
+    <div class="product-detail-layout">
+      
+      <!-- Columna Izquierda: Visor 3D directo -->
+      <section class="viewer-column">
+        <div class="product-viewer-container">
+          <model-viewer
+            id="reloj-viewer"
+            src=""
+            poster=""
+            loading="eager"
+            camera-controls
+            auto-rotate
+            rotation-per-second="30deg"
+            touch-action="pan-y"
+            shadow-intensity="1.2"
+            shadow-softness="0.8"
+            environment-image="neutral"
+            exposure="1.0"
+            camera-orbit="0deg 75deg 105%"
+            min-camera-orbit="auto auto 65%"
+            max-camera-orbit="auto auto 220%"
+            alt="Visualización 3D Reloj">
 
-      <section class="relacionados">
-        <div class="relacionados-head">
-          <h2>También te puede interesar</h2>
-          <a href="catalogo.html" class="eyebrow">Ver catálogo →</a>
+            <!-- Barra de progreso discreta durante la descarga inicial -->
+            <div slot="progress-bar" class="custom-progress-bar hide" id="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
+              <span class="progress-text" id="progress-text">Cargando 3D...</span>
+            </div>
+
+            <!-- Controles flotantes de cámara -->
+            <div class="viewer-floating-controls" id="viewer-controls">
+              <button type="button" id="btn-rotate-toggle" title="Girar reloj" class="active">🔄 Giro</button>
+              <button type="button" id="btn-front-cam" title="Vista Frontal">🎯 Frontal</button>
+              <button type="button" id="btn-side-cam" title="Vista Lateral">📐 Perfil</button>
+            </div>
+          </model-viewer>
         </div>
-        <div class="product-grid" id="relacionados-grid"></div>
       </section>
+
+      <!-- Columna Derecha: Información del Producto -->
+      <section class="info-column">
+        <div class="product-info-card">
+          <span class="badge-edition" id="producto-categoria">COLECCIÓN EXCLUSIVA</span>
+          <h1 id="producto-nombre" class="product-title">Cargando pieza...</h1>
+          
+          <div class="price-container">
+            <span class="currency">Bs</span>
+            <span id="producto-precio" class="price-val">0.00</span>
+          </div>
+
+          <p id="producto-descripcion" class="product-description">
+            Cargando detalles de la pieza seleccionada...
+          </p>
+
+          <div class="specs-grid">
+            <div class="spec-item">
+              <span class="spec-label">Material</span>
+              <span class="spec-value" id="producto-material">Acero Inoxidable</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Movimiento</span>
+              <span class="spec-value" id="producto-movimiento">Automático</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Resistencia</span>
+              <span class="spec-value" id="producto-resistencia">100m (10 ATM)</span>
+            </div>
+          </div>
+
+          <div class="actions-group">
+            <a href="#" id="btn-whatsapp-comprar" class="btn-primary-action" target="_blank" rel="noopener noreferrer">
+              Solicitar por WhatsApp
+            </a>
+            <a href="catalogo.html" class="btn-secondary-action">
+              Volver al Catálogo
+            </a>
+          </div>
+        </div>
+      </section>
+
     </div>
   </main>
 
-  <!-- ===================== FOOTER ===================== -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-col">
-          <span class="brand-name">CRONOS</span>
-          <p>Venta directa desde nuestro domicilio, atención personalizada.</p>
-        </div>
-        <div class="footer-col">
-          <p class="eyebrow">Navegación</p>
-          <a href="index.html">Inicio</a>
-          <a href="catalogo.html">Catálogo</a>
-        </div>
-        <div class="footer-col">
-          <p class="eyebrow">Contacto</p>
-          <a href="#">WhatsApp</a>
-          <a href="#">Instagram</a>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        &copy; 2026 Cronos. Todos los derechos reservados.
-      </div>
-    </div>
-  </footer>
-
-  <!-- ===================== BOTÓN FLOTANTE ASESOR IA ===================== -->
-  <a href="agente-ia.html" class="ai-float-btn">
-    <span class="brand-mark"></span>
-    <span class="ai-float-text">
-      <strong>¿Necesitás ayuda?</strong>
-      <span>Chateá con tu asesor</span>
-    </span>
-  </a>
-
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/whatsapp-config.js"></script>
-  <script src="js/productos.js"></script>
   <script src="js/detalle-producto.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
 </body>
 </html>

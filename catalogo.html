@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relojería CRONOS — Catálogo</title>
+  <title>Relojería CRONOS — Catálogo Exclusivo</title>
+  
+  <!-- Tipografía refinada -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="css/styles.css">
-  <style>
-    .catalog-head {
-      padding: 56px 0 0;
-      text-align: center;
-    }
-  </style>
 </head>
 <body>
 
   <!-- ===================== NAVBAR ===================== -->
   <header class="navbar">
-    <div class="container">
+    <div class="container nav-container-flex">
       <a href="index.html" class="brand">
-        <img src="img/logo-cronos.png" alt="Cronos - Tienda de relojes" class="brand-logo-img">
+        <img src="img/logo-cronos.png" alt="Cronos Relojería" class="brand-logo-img">
+        <span class="brand-text">CRONOS</span>
       </a>
 
       <nav class="nav-links">
@@ -29,7 +30,7 @@
       </nav>
 
       <div class="nav-actions">
-        <div id="auth-slot"><a href="login.html">Ingresar</a></div>
+        <div id="auth-slot"><a href="login.html" class="btn-auth-link">Ingresar</a></div>
         <button class="nav-toggle" aria-label="Abrir menú">&#9776;</button>
       </div>
     </div>
@@ -38,10 +39,11 @@
   <!-- ===================== ENCABEZADO CATÁLOGO ===================== -->
   <section class="catalog-head">
     <div class="container">
-      <p class="eyebrow">Colección completa</p>
-      <h1>Nuestro catálogo</h1>
+      <span class="eyebrow">COLECCIÓN DE ALTA PRECISIÓN</span>
+      <h1 class="section-title">Nuestra Colección</h1>
+      <p class="section-subtitle">Piezas seleccionadas que combinan ingeniería mecánica, diseño atemporal y elegancia superior.</p>
 
-      <!-- Tabs de filtro por categoría (js/productos.js los conecta) -->
+      <!-- Tabs de filtro por categoría -->
       <div class="filter-tabs">
         <button class="filter-tab active" data-categoria="todos">Todos</button>
         <button class="filter-tab" data-categoria="hombre">Hombre</button>
@@ -52,9 +54,84 @@
   </section>
 
   <!-- ===================== GRILLA DE PRODUCTOS ===================== -->
-  <section class="section">
+  <section class="section catalog-body">
     <div class="container">
-      <div class="product-grid" id="product-grid" data-destacados="false"></div>
+      <div class="product-grid" id="product-grid">
+        <!-- Renderizado dinámico desde js/productos.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECCIÓN NOSOTROS ===================== -->
+  <section class="section about-section" id="nosotros">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-content">
+          <span class="eyebrow">PASIÓN POR EL TIEMPO</span>
+          <h2 class="section-title">Sobre Relojería Cronos</h2>
+          <p class="about-lead">
+            En <strong>Cronos</strong> creemos que un reloj no es simplemente una herramienta para medir las horas, sino una declaración de carácter, legado y sofisticación.
+          </p>
+          <p class="about-text">
+            Nacimos con el compromiso de acercar las piezas más emblemáticas y exclusivas a coleccionistas y apasionados de la relojería. Trabajamos con modelos cuidadosamente inspeccionados, garantizando autenticidad, durabilidad y acabados de primer nivel.
+          </p>
+          <div class="about-features">
+            <div class="feature-item">
+              <span class="feature-number">100%</span>
+              <span class="feature-label">Autenticidad & Calidad</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-number">360°</span>
+              <span class="feature-label">Inspección Digital 3D</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-number">24/7</span>
+              <span class="feature-label">Asesoría Personalizada</span>
+            </div>
+          </div>
+        </div>
+        <div class="about-card-badge">
+          <div class="badge-inner">
+            <div style="font-size: 2.4rem; margin-bottom: 12px;">⏱️</div>
+              <h3>Artesanía & Precisión</h3>
+              <p>Atención directa y asesoramiento técnico personalizado para encontrar la pieza indicada para tu estilo de vida.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECCIÓN CONTACTO ===================== -->
+  <section class="section contact-section" id="contacto">
+    <div class="container">
+      <div class="contact-header text-center">
+        <span class="eyebrow">ESTAMOS A TU DISPOSICIÓN</span>
+        <h2 class="section-title">Contacto Directo</h2>
+        <p class="section-subtitle">¿Tienes alguna consulta sobre un modelo o deseas agendar una visita personalizada?</p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-icon">📱</div>
+          <h3>WhatsApp Personalizado</h3>
+          <p>Chatea directamente con nuestro asesor para cotizaciones o consultas de stock.</p>
+          <a href="https://wa.me/59170000000?text=Hola%20Cronos,%20quisiera%20recibir%20más%20información" target="_blank" class="contact-btn">Iniciar Chat</a>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon">📍</div>
+          <h3>Atención Directa</h3>
+          <p>Santa Cruz, Bolivia. Ventas y entregas personalizadas con previa cita.</p>
+          <span class="contact-detail-text">Lun - Sáb: 09:00 - 19:00</span>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon">🤖</div>
+          <h3>Asesor Virtual IA</h3>
+          <p>Encuentra el reloj ideal para tu presupuesto o evento con nuestra IA integrada.</p>
+          <a href="agente-ia.html" class="contact-btn secondary">Hablar con Asesor IA</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -62,19 +139,22 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-col">
+        <div class="footer-col brand-col">
           <span class="brand-name">CRONOS</span>
-          <p>Venta directa desde nuestro domicilio, atención personalizada.</p>
+          <p>Venta exclusiva de piezas de relojería. Precisión suiza, estilo atemporal y atención especializada.</p>
         </div>
         <div class="footer-col">
-          <p class="eyebrow">Navegación</p>
+          <p class="footer-heading">Navegación</p>
           <a href="index.html">Inicio</a>
-          <a href="catalogo.html">Catálogo</a>
+          <a href="catalogo.html">Catálogo Completo</a>
+          <a href="#nosotros">Nosotros</a>
+          <a href="#contacto">Contacto</a>
         </div>
         <div class="footer-col">
-          <p class="eyebrow">Contacto</p>
-          <a href="#">WhatsApp</a>
-          <a href="#">Instagram</a>
+          <p class="footer-heading">Canales</p>
+          <a href="https://wa.me/59170000000" target="_blank">WhatsApp Directo</a>
+          <a href="agente-ia.html">Asesor Inteligente</a>
+          <a href="admin/login.html">Panel Administrador</a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -85,14 +165,14 @@
 
   <!-- ===================== BOTÓN FLOTANTE ASESOR IA ===================== -->
   <a href="agente-ia.html" class="ai-float-btn">
-    <span class="brand-mark"></span>
+    <span class="ai-spark">✨</span>
     <span class="ai-float-text">
-      <strong>¿Necesitás ayuda?</strong>
-      <span>Chateá con tu asesor</span>
+      <strong>¿Buscando una recomendación?</strong>
+      <span>Consulta a nuestro asesor IA</span>
     </span>
   </a>
 
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/whatsapp-config.js"></script>
